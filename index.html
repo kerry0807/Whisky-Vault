@@ -26,6 +26,19 @@ button,input,select,textarea{font:inherit}button{border:0;color:inherit;cursor:p
 .form{border:1px solid var(--line);border-radius:28px;background:rgba(255,255,255,.06);padding:16px}.searchbar{margin-top:14px}
 .nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,940px);height:calc(var(--nav) + env(safe-area-inset-bottom));padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:rgba(8,5,3,.92);backdrop-filter:blur(20px);border-top:1px solid var(--line)}.nav button{border-radius:18px;background:transparent;color:var(--muted);font-size:10px;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.nav button span{font-size:19px}.nav button.active{background:rgba(221,181,92,.14);color:var(--ink)}.toast{position:fixed;left:50%;bottom:calc(var(--nav) + 18px);transform:translateX(-50%) translateY(20px);opacity:0;transition:.2s;background:#1d1209;border:1px solid var(--line);border-radius:999px;padding:11px 15px;font-weight:800;z-index:50}.toast.show{opacity:1;transform:translateX(-50%)}
 @media(min-width:740px){.grid{grid-template-columns:repeat(3,1fr)}.card.featured{grid-column:auto;display:block;min-height:272px}.featured .imgbox{height:158px;margin-bottom:12px}.featured h3{font-size:16px}.hero{min-height:320px}.hero img{right:30px;width:36%;max-height:300px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .wide{grid-column:1/-1}.detail-img{height:340px}}
+.toggle-row{display:flex;gap:8px;align-items:center}
+.tog{flex:1;min-height:48px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-weight:900;font-size:13px;transition:.15s;color:var(--muted)}
+.tog.on{background:rgba(221,181,92,.18);border-color:var(--gold);color:var(--gold)}
+.tog.no{background:rgba(255,90,60,.12);border-color:rgba(255,90,60,.4);color:#ff9080}
+.abv-wrap{position:relative}
+.abv-wrap input{padding-right:38px}
+.abv-unit{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;font-weight:700;pointer-events:none}
+.ac-wrap{position:relative}
+.ac-drop{position:absolute;z-index:30;top:calc(100% + 4px);left:0;right:0;background:#1a0f07;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:none;max-height:220px;overflow-y:auto}
+.ac-drop.open{display:block}
+.ac-item{padding:12px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(221,181,92,.1)}
+.ac-item:last-child{border-bottom:0}
+.ac-item:hover,.ac-item.hi{background:rgba(221,181,92,.12);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -46,18 +59,18 @@ button,input,select,textarea{font:inherit}button{border:0;color:inherit;cursor:p
 <form id="form" class="form"><input type="hidden" id="fid"><div class="form-grid">
 <div class="field wide"><label>Bottle Image</label><input id="fimage" type="file" accept="image/*"><div id="preview" class="imgbox" style="height:150px;margin:8px 0 0"></div></div>
 <div class="field"><label>Name</label><input id="fname"></div>
-<div class="field"><label>Brand / Bottler</label><input id="fbrand"></div>
-<div class="field"><label>Distillery</label><input id="fdistillery"></div>
+<div class="field wide"><label>Brand / Bottler</label><div class="ac-wrap"><input id="fbrand" autocomplete="off" placeholder="Type or select…"><div class="ac-drop" id="brandDrop"></div></div></div>
+<div class="field wide"><label>Distillery</label><div class="ac-wrap"><input id="fdistillery" autocomplete="off" placeholder="Type or select…"><div class="ac-drop" id="distilleryDrop"></div></div></div>
 <div class="field"><label>Country</label><select id="fcountry"><option></option><option>Scotland</option><option>Ireland</option><option>Japan</option><option>United States</option><option>Canada</option><option>England</option><option>Wales</option><option>India</option><option>Australia</option><option>Taiwan</option><option>Sweden</option><option>France</option><option>New Zealand</option><option>Other</option></select></div>
 <div class="field"><label>Region</label><select id="fregion"><option></option><option>Speyside</option><option>Highland</option><option>Islay</option><option>Campbeltown</option><option>Lowland</option><option>Island</option><option>Scotland - Other</option><option>Ireland</option><option>Japan</option><option>Kentucky</option><option>Tennessee</option><option>United States - Other</option><option>Canada</option><option>World Whisky</option><option>Other</option></select></div>
 <div class="field"><label>Type</label><select id="ftype"><option></option><option>Single Malt Scotch Whisky</option><option>Blended Malt Scotch Whisky</option><option>Blended Scotch Whisky</option><option>Single Grain Scotch Whisky</option><option>Blended Grain Scotch Whisky</option><option>Single Malt Irish Whiskey</option><option>Single Pot Still Irish Whiskey</option><option>Single Grain Irish Whiskey</option><option>Blended Irish Whiskey</option><option>Bourbon Whiskey</option><option>Straight Bourbon Whiskey</option><option>Rye Whiskey</option><option>Straight Rye Whiskey</option><option>Tennessee Whiskey</option><option>American Single Malt Whiskey</option><option>Japanese Single Malt Whisky</option><option>Japanese Blended Whisky</option><option>Japanese Grain Whisky</option><option>Japanese Blended Malt Whisky</option><option>Canadian Whisky</option><option>Other World Whisky</option><option>Other</option></select></div>
 <div class="field"><label>Edition</label><input id="fedition"></div>
-<div class="field"><label>Age Statement</label><input id="fage" placeholder="NAS or age"></div>
-<div class="field"><label>ABV</label><input id="fabv"></div>
+<div class="field"><label>Age Statement</label><div class="abv-wrap"><input id="fage" type="number" step="1" min="0" max="99" placeholder="NAS"><span class="abv-unit" style="font-size:11px">Yrs</span></div></div>
+<div class="field"><label>ABV</label><div class="abv-wrap"><input id="fabv" type="number" step="0.1" min="0" max="99.9" placeholder="e.g. 46"><span class="abv-unit">%</span></div></div>
 <div class="field"><label>Cask Type</label><input id="fcask" list="caskOptions" placeholder="Type or choose"><datalist id="caskOptions"><option value="Ex-Bourbon"><option value="First Fill Bourbon"><option value="Refill Bourbon"><option value="Oloroso Sherry"><option value="PX Sherry"><option value="Fino Sherry"><option value="Amontillado Sherry"><option value="Madeira"><option value="Port"><option value="Sauternes"><option value="Wine Cask"><option value="Rum Cask"><option value="Cognac"><option value="Virgin Oak"><option value="Mizunara Oak"><option value="Multiple Casks"></datalist></div>
 <div class="field"><label>Status</label><select id="fstatus"><option>Not entered</option><option>Sealed</option><option>Open</option><option>Finished</option></select></div>
-<div class="field"><label>Chill Filtration</label><select id="fchill"><option>Unknown</option><option>Yes</option><option>No</option></select></div>
-<div class="field"><label>Natural Colour</label><select id="fnatural"><option>Unknown</option><option>Yes</option><option>No</option></select></div>
+<div class="field"><label>Non Chill Filtered</label><div class="toggle-row"><button class="tog" id="fchillY" type="button">Y</button><button class="tog" id="fchillN" type="button">N</button></div><input type="hidden" id="fchill"></div>
+<div class="field"><label>Natural Colour</label><div class="toggle-row"><button class="tog" id="fnaturalY" type="button">Y</button><button class="tog" id="fnaturalN" type="button">N</button></div><input type="hidden" id="fnatural"></div>
 <div class="field wide"><label>Description</label><textarea id="fdescription"></textarea></div>
 <div class="field wide"><label>Flavour Profile</label><textarea id="fflavour"></textarea></div>
 <div class="field wide"><label>Serving Recommendation</label><textarea id="fserving"></textarea></div>
@@ -65,7 +78,38 @@ button,input,select,textarea{font:inherit}button{border:0;color:inherit;cursor:p
 <div class="field wide"><label>My Notes</label><textarea id="fnotes"></textarea></div>
 </div><div class="actions"><button class="btn" type="submit">Save</button><button class="ghost" type="button" data-go="collection">Cancel</button></div><button class="ghost" id="deleteBtn" type="button" style="width:100%;margin-top:10px;color:#ffb7aa">Delete Whisky</button></form>
 </section>
-<section id="settings" class="screen"><div class="head"><h2>Settings</h2><small>V4.0</small></div><div class="form"><p class="muted">GEN2 clean baseline. Text and images are stored in IndexedDB. Official sheet appears collapsed at the bottom of the detail page.</p><div class="actions"><button class="btn" id="exportBtn" type="button">Export Text JSON</button><button class="ghost" id="resetBtn" type="button">Reset Base</button></div></div></section>
+<section id="settings" class="screen">
+<div class="head"><h2>Settings</h2><small>V4.0</small></div>
+<div class="form">
+  <p class="muted">GEN2 clean baseline. Text and images stored in IndexedDB. GitHub export bakes all data into a self-contained HTML file — open it anywhere to restore your full vault.</p>
+
+  <div class="field" style="margin-top:16px"><label>GitHub Personal Access Token</label>
+    <input id="ghPat" type="password" placeholder="ghp_…" autocomplete="off">
+  </div>
+  <div class="field"><label>Repo (owner/repo)</label>
+    <input id="ghRepo" placeholder="yourname/whisky-vault">
+  </div>
+  <div class="field"><label>Branch</label>
+    <input id="ghBranch" placeholder="main">
+  </div>
+  <div class="field"><label>File Path</label>
+    <input id="ghPath" placeholder="index.html">
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;margin:4px 0 16px">
+    <button class="tog" id="autoTogBtn" type="button" style="max-width:60px">OFF</button>
+    <span style="font-size:13px;color:var(--muted)">Auto-commit on every save</span>
+  </div>
+
+  <div class="actions" style="flex-direction:column;gap:10px">
+    <button class="btn" id="ghSaveBtn" type="button">Save GitHub Settings</button>
+    <button class="btn" id="exportDashBtn" type="button" style="background:linear-gradient(135deg,#5c8edd,#2d509c)">⬆ Publish to GitHub</button>
+    <button class="ghost" id="exportBtn" type="button">Export JSON (local)</button>
+    <button class="ghost" id="resetBtn" type="button">Reset Base Bottles</button>
+  </div>
+  <p id="ghStatus" style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center"></p>
+</div>
+</section>
 <section id="detail" class="screen"><button class="ghost" data-go="collection" type="button" style="margin-bottom:12px;max-width:120px">← Back</button><div id="detailPanel"></div></section>
 </main></div>
 <nav class="nav"><button data-go="home" class="active"><span>⌂</span>Home</button><button data-go="collection"><span>🥃</span>Collection</button><button data-go="recent"><span>◴</span>Recent</button><button data-go="edit"><span>＋</span>Add</button><button data-go="settings"><span>⚙</span>Settings</button></nav>
@@ -80,7 +124,7 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
 const clean=v=>v&&v!=="Not entered"&&v!=="Unknown"?v:"";
 function pop(m){let t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(pop.t);pop.t=setTimeout(()=>t.classList.remove("show"),1700)}
-function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open("WhiskyVaultGEN2V40",1);r.onupgradeneeded=()=>{let db=r.result;if(!db.objectStoreNames.contains("meta"))db.createObjectStore("meta");if(!db.objectStoreNames.contains("images"))db.createObjectStore("images")};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function openDB(){return new Promise((res,rej)=>{let r=indexedDB.open("WhiskyVaultGEN2V40",2);r.onupgradeneeded=()=>{let db=r.result;if(!db.objectStoreNames.contains("meta"))db.createObjectStore("meta");if(!db.objectStoreNames.contains("images"))db.createObjectStore("images");if(!db.objectStoreNames.contains("lists"))db.createObjectStore("lists")};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function dbGet(s,k){let db=await openDB();return new Promise(resolve=>{let tx=db.transaction(s,"readonly"),rq=tx.objectStore(s).get(k);rq.onsuccess=()=>resolve(rq.result);rq.onerror=()=>resolve(null)})}
 async function dbPut(s,k,v){let db=await openDB();return new Promise((resolve,reject)=>{let tx=db.transaction(s,"readwrite");tx.objectStore(s).put(v,k);tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error)})}
 async function dbDel(s,k){let db=await openDB();return new Promise(resolve=>{let tx=db.transaction(s,"readwrite");tx.objectStore(s).delete(k);tx.oncomplete=()=>resolve(true);tx.onerror=()=>resolve(false)})}
@@ -90,25 +134,169 @@ async function setImage(id,data){await dbPut("images",id,data)}
 async function getImage(id){let el=$("base-img-"+id);if(el)return el.src;return await dbGet("images",id)||""}
 function show(v,mode="add"){view=v;document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active",s.id===v));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.go===v));if(v==="edit"&&mode==="add")newForm();if(v==="recent")renderRecent();window.scrollTo({top:0,behavior:"smooth"})}
 document.addEventListener("click",e=>{let go=e.target.closest("[data-go]");if(go){e.preventDefault();show(go.dataset.go);return}let edit=e.target.closest("[data-edit]");if(edit){e.preventDefault();show("edit","edit");loadForm(edit.dataset.edit);return}let open=e.target.closest("[data-open]");if(open){e.preventDefault();openBottle(open.dataset.open);return}});
-async function card(id,featured=false){let b=bottles[id], image=await getImage(id);let el=document.createElement("article");el.className="card"+(featured?" featured":"");let pills=[clean(b.age)||"NAS",clean(b.abv),clean(b.country)].filter(Boolean).map(x=>`<span class="pill">${esc(x)}</span>`).join("");el.innerHTML=`<div class="imgbox">${image?`<img src="${image}">`:""}</div><div><p class="brand">${esc(clean(b.brand)||"Information pending")}</p><h3>${esc(b.name||"Untitled Whisky")}</h3><div class="muted">${esc(clean(b.type)||"Details can be added later")}</div>${pills}<div class="actions"><button class="ghost" data-edit="${id}" type="button">Edit</button><button class="ghost" data-open="${id}" type="button">View</button></div></div>`;return el}
+async function card(id,featured=false){let b=bottles[id], image=await getImage(id);let el=document.createElement("article");el.className="card"+(featured?" featured":"");el.dataset.open=id;el.style.cursor="pointer";let pills=[clean(b.age)||"NAS",clean(b.abv),clean(b.country)].filter(Boolean).map(x=>`<span class="pill">${esc(x)}</span>`).join("");el.innerHTML=`<div class="imgbox">${image?`<img src="${image}">`:""}</div><div><p class="brand">${esc(clean(b.brand)||"Information pending")}</p><h3>${esc(b.name||"Untitled Whisky")}</h3><div class="muted">${esc(clean(b.type)||"Details can be added later")}</div>${pills}</div>`;return el}
 function bottleIds(q=""){q=q.toLowerCase();return Object.keys(bottles).filter(id=>Object.values(bottles[id]).join(" ").toLowerCase().includes(q))}
 async function renderGrid(target,ids,featuredFirst=false){let g=$(target);g.innerHTML="";for(let [i,id] of ids.entries())g.appendChild(await card(id,featuredFirst&&i===0))}
 async function renderAll(){let ids=Object.keys(bottles);$("count").textContent=ids.length;$("heroImg").src=await getImage(ids[0]);await renderGrid("featuredGrid",[ids[0]],true);await renderGrid("homeGrid",ids);await renderCollection();await renderRecent()}
-async function renderCollection(){let ids=bottleIds($("search").value||"");$("result").textContent=ids.length+" bottles";await renderGrid("collectionGrid",ids,true)}
+async function renderCollection(){let ids=bottleIds($("search").value||"");$("result").textContent=ids.length+" bottle"+(ids.length!==1?"s":"");let g=$("collectionGrid");if(!ids.length){g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">🥃</div><p style="margin:0">No bottles match your search</p></div>`;return}await renderGrid("collectionGrid",ids,true)}
 async function renderRecent(){let ids=Object.keys(bottles).sort((a,b)=>(bottles[b].createdAt||0)-(bottles[a].createdAt||0));await renderGrid("recentGrid",ids,true)}
 function spec(label,val){return `<div class="spec"><small>${label}</small><strong>${esc(val||"Not entered")}</strong></div>`}
-async function openBottle(id){let b=bottles[id], image=await getImage(id);$("detailPanel").innerHTML=`<article class="detail"><div class="detail-hero"><div class="detail-img">${image?`<img src="${image}">`:""}</div></div><div class="detail-body"><p class="brand">${esc(clean(b.brand)||"Information pending")}</p><h2>${esc(b.name||"Untitled Whisky")}</h2><p class="muted">${esc(clean(b.type)||"Details can be added later")}</p><div class="actions"><button class="ghost" data-edit="${id}" type="button">Edit</button></div><div class="specs">${spec("Distillery",b.distillery)}${spec("Country",b.country)}${spec("Region",b.region)}${spec("Age Statement",b.age||"NAS")}${spec("ABV",b.abv)}${spec("Cask Type",b.caskType)}${spec("Status",b.status)}${spec("Chill Filtration",b.chillFiltration)}${spec("Natural Colour",b.naturalColour)}</div><div class="panel"><h4>Description</h4><p>${esc(b.description||"Not entered")}</p></div><div class="panel"><h4>Flavour Profile</h4><p>${esc(b.flavour||"Not entered")}</p></div><div class="panel"><h4>Serving Recommendation</h4><p>${esc(b.serving||"Not entered")}</p></div><div class="panel"><h4>Technical Details</h4><p>${esc(b.technical||"Not entered")}</p></div><div class="panel"><h4>My Notes</h4><p>${esc(b.notes||"Not entered")}</p></div><details><summary>Official Information Sheet</summary><div class="sheet-img">${image?`<img src="${image}">`:""}</div></details></div></article>`;show("detail")}
+async function openBottle(id){let b=bottles[id], image=await getImage(id);$("detailPanel").innerHTML=`<article class="detail"><div class="detail-hero"><div class="detail-img">${image?`<img src="${image}">`:""}</div></div><div class="detail-body"><p class="brand">${esc(clean(b.brand)||"Information pending")}</p><h2>${esc(b.name||"Untitled Whisky")}</h2><p class="muted">${esc(clean(b.type)||"Details can be added later")}</p><div class="actions"><button class="ghost" data-edit="${id}" type="button">Edit</button></div><div class="specs">${spec("Distillery",b.distillery)}${spec("Country",b.country)}${spec("Region",b.region)}${spec("Age Statement",b.age||"NAS")}${spec("ABV",b.abv)}${spec("Cask Type",b.caskType)}${spec("Status",b.status)}${spec("Non Chill Filtered",b.chillFiltration)}${spec("Natural Colour",b.naturalColour)}</div><div class="panel"><h4>Description</h4><p>${esc(b.description||"Not entered")}</p></div><div class="panel"><h4>Flavour Profile</h4><p>${esc(b.flavour||"Not entered")}</p></div><div class="panel"><h4>Serving Recommendation</h4><p>${esc(b.serving||"Not entered")}</p></div><div class="panel"><h4>Technical Details</h4><p>${esc(b.technical||"Not entered")}</p></div><div class="panel"><h4>My Notes</h4><p>${esc(b.notes||"Not entered")}</p></div><details><summary>Official Information Sheet</summary><div class="sheet-img">${image?`<img src="${image}">`:""}</div></details></div></article>`;show("detail")}
 function setField(id,v){$(id).value=v||""}
-function newForm(){pendingImage="";$("formTitle").textContent="Add Whisky";$("fid").value="";["fname","fbrand","fdistillery","fcountry","fregion","ftype","fedition","fage","fabv","fcask","fdescription","fflavour","fserving","ftechnical","fnotes"].forEach(id=>setField(id,""));setField("fstatus","Not entered");setField("fchill","Unknown");setField("fnatural","Unknown");$("preview").innerHTML="";$("deleteBtn").style.display="none"}
-async function loadForm(id){let b=bottles[id];pendingImage="";$("formTitle").textContent="Edit "+(b.name||"Whisky");$("fid").value=id;setField("fname",b.name);setField("fbrand",b.brand);setField("fdistillery",b.distillery);setField("fcountry",b.country);setField("fregion",b.region);setField("ftype",b.type);setField("fedition",b.edition);setField("fage",b.age);setField("fabv",b.abv);setField("fcask",b.caskType);setField("fstatus",b.status||"Not entered");setField("fchill",b.chillFiltration||"Unknown");setField("fnatural",b.naturalColour||"Unknown");setField("fdescription",b.description);setField("fflavour",b.flavour);setField("fserving",b.serving);setField("ftechnical",b.technical);setField("fnotes",b.notes);let image=await getImage(id);$("preview").innerHTML=image?`<img src="${image}">`:"";$("deleteBtn").style.display=b.base?"none":"block"}
-$("form").onsubmit=async e=>{e.preventDefault();let id=$("fid").value||("user-"+Date.now());let old=bottles[id]||{};bottles[id]={...old,base:!!old.base,createdAt:old.createdAt||Date.now(),name:$("fname").value.trim()||"Untitled Whisky",brand:$("fbrand").value.trim(),distillery:$("fdistillery").value.trim(),country:$("fcountry").value,region:$("fregion").value,type:$("ftype").value,edition:$("fedition").value.trim(),age:$("fage").value.trim(),abv:$("fabv").value.trim(),caskType:$("fcask").value.trim(),status:$("fstatus").value,chillFiltration:$("fchill").value,naturalColour:$("fnatural").value,description:$("fdescription").value.trim(),flavour:$("fflavour").value.trim(),serving:$("fserving").value.trim(),technical:$("ftechnical").value.trim(),notes:$("fnotes").value.trim()};if(pendingImage)await setImage(id,pendingImage);if(!await saveData())return;pendingImage="";await renderAll();pop("Whisky saved");show("collection")};
-$("deleteBtn").onclick=async()=>{let id=$("fid").value;if(!id||bottles[id]?.base){pop("Base bottles cannot be deleted");return}delete bottles[id];await dbDel("images",id);if(!await saveData())return;await renderAll();pop("Whisky deleted");show("collection")};
+function newForm(){pendingImage="";$("formTitle").textContent="Add Whisky";$("fid").value="";["fname","fbrand","fdistillery","fcountry","fregion","ftype","fedition","fcask","fdescription","fflavour","fserving","ftechnical","fnotes"].forEach(id=>setField(id,""));setAbv("");setAge("");setField("fstatus","Not entered");if($("fchill")._togSet)$("fchill")._togSet("Unknown");if($("fnatural")._togSet)$("fnatural")._togSet("Unknown");$("preview").innerHTML="";$("deleteBtn").style.display="none";if($("fbrand")._acRefresh)$("fbrand")._acRefresh();if($("fdistillery")._acRefresh)$("fdistillery")._acRefresh();}
+async function loadForm(id){let b=bottles[id];pendingImage="";$("formTitle").textContent="Edit "+(b.name||"Whisky");$("fid").value=id;setField("fname",b.name);setField("fbrand",b.brand);setField("fdistillery",b.distillery);setField("fcountry",b.country);setField("fregion",b.region);setField("ftype",b.type);setField("fedition",b.edition);setAge(b.age);setAbv(b.abv);setField("fcask",b.caskType);setField("fstatus",b.status||"Not entered");if($("fchill")._togSet)$("fchill")._togSet(b.chillFiltration||"Unknown");if($("fnatural")._togSet)$("fnatural")._togSet(b.naturalColour||"Unknown");setField("fdescription",b.description);setField("fflavour",b.flavour);setField("fserving",b.serving);setField("ftechnical",b.technical);setField("fnotes",b.notes);let image=await getImage(id);$("preview").innerHTML=image?`<img src="${image}">`:"";$("deleteBtn").style.display=b.base?"none":"block"}
+$("form").onsubmit=async e=>{e.preventDefault();let id=$("fid").value||("user-"+Date.now());let old=bottles[id]||{};let brand=$("fbrand").value.trim(),distillery=$("fdistillery").value.trim();bottles[id]={...old,base:!!old.base,createdAt:old.createdAt||Date.now(),name:$("fname").value.trim()||"Untitled Whisky",brand,distillery,country:$("fcountry").value,region:$("fregion").value,type:$("ftype").value,edition:$("fedition").value.trim(),age:getAge(),abv:getAbv(),caskType:$("fcask").value.trim(),status:$("fstatus").value,chillFiltration:$("fchill").value,naturalColour:$("fnatural").value,description:$("fdescription").value.trim(),flavour:$("fflavour").value.trim(),serving:$("fserving").value.trim(),technical:$("ftechnical").value.trim(),notes:$("fnotes").value.trim()};await addToList("brands",brand);await addToList("distilleries",distillery);if(pendingImage)await setImage(id,pendingImage);if(!await saveData())return;pendingImage="";await renderAll();pop("Whisky saved");show("collection")};
+$("deleteBtn").onclick=async()=>{let id=$("fid").value;if(!id||bottles[id]?.base){pop("Base bottles cannot be deleted");return}if(!confirm("Delete "+( bottles[id]?.name||"this whisky")+"? This cannot be undone."))return;delete bottles[id];await dbDel("images",id);if(!await saveData())return;await renderAll();pop("Whisky deleted");show("collection")};
 function compressImage(file,cb){let img=new Image(),reader=new FileReader();reader.onload=()=>{img.onload=()=>{let max=800,w=img.width,h=img.height;if(w>max||h>max){if(w>h){h=Math.round(h*max/w);w=max}else{w=Math.round(w*max/h);h=max}}let c=document.createElement("canvas");c.width=w;c.height=h;let ctx=c.getContext("2d");ctx.fillStyle="#140b06";ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);cb(c.toDataURL("image/jpeg",0.68))};img.src=reader.result};reader.readAsDataURL(file)}
 $("fimage").onchange=e=>{let file=e.target.files[0];if(!file)return;if(!file.type.startsWith("image/")){pop("Please choose an image");return}compressImage(file,data=>{pendingImage=data;$("preview").innerHTML=`<img src="${data}">`;pop("Image ready")})};
 $("search").oninput=renderCollection;$("homeSearch").oninput=e=>{$("search").value=e.target.value;show("collection");renderCollection()};
 $("randomBtn").onclick=async()=>{let ids=Object.keys(bottles);await openBottle(ids[Math.floor(Math.random()*ids.length)])};
-$("exportBtn").onclick=()=>{let blob=new Blob([JSON.stringify(bottles,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="whisky-vault-gen2-v4-0-text.json";a.click();URL.revokeObjectURL(a.href);pop("Text export ready")};
-$("resetBtn").onclick=async()=>{bottles=JSON.parse(JSON.stringify(BASE));await saveData();await renderAll();pop("Reset base")};
+$("exportBtn").onclick=()=>{let d=new Date(),ds=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");let blob=new Blob([JSON.stringify(bottles,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="whisky-vault-"+ds+".json";a.click();URL.revokeObjectURL(a.href);pop("Text export ready")};
+$("resetBtn").onclick=async()=>{if(!confirm("Reset to base bottles? All your added bottles will be lost."))return;bottles=JSON.parse(JSON.stringify(BASE));await saveData();await renderAll();pop("Reset base")};
+
+// ── GitHub settings ───────────────────────────────────────────────────
+const GH_PAT="wv2_github_pat",GH_REPO="wv2_github_repo",GH_BRANCH="wv2_github_branch",GH_PATH="wv2_github_path",GH_AUTO="wv2_github_auto";
+function ghSet(k,v){if(v)localStorage.setItem(k,v);else localStorage.removeItem(k)}
+function ghGet(k){return localStorage.getItem(k)||""}
+
+function loadGhSettings(){
+  $("ghPat").value=ghGet(GH_PAT);
+  $("ghRepo").value=ghGet(GH_REPO)||"";
+  $("ghBranch").value=ghGet(GH_BRANCH)||"main";
+  $("ghPath").value=ghGet(GH_PATH)||"index.html";
+  const auto=ghGet(GH_AUTO)==="1";
+  $("autoTogBtn").textContent=auto?"ON":"OFF";
+  $("autoTogBtn").className="tog"+(auto?" on":"");
+}
+$("autoTogBtn").onclick=()=>{
+  const on=ghGet(GH_AUTO)==="1";
+  ghSet(GH_AUTO,on?"":"1");
+  $("autoTogBtn").textContent=on?"OFF":"ON";
+  $("autoTogBtn").className="tog"+(on?"":" on");
+};
+$("ghSaveBtn").onclick=()=>{
+  ghSet(GH_PAT,$("ghPat").value.trim());
+  ghSet(GH_REPO,$("ghRepo").value.trim());
+  ghSet(GH_BRANCH,$("ghBranch").value.trim()||"main");
+  ghSet(GH_PATH,$("ghPath").value.trim()||"index.html");
+  pop("GitHub settings saved");
+};
+
+// ── GitHub export engine ──────────────────────────────────────────────
+async function exportDashboard(silent=false){
+  const pat=ghGet(GH_PAT),repo=ghGet(GH_REPO),branch=ghGet(GH_BRANCH)||"main",path=ghGet(GH_PATH)||"index.html";
+  if(!pat||!repo){if(!silent)pop("Set GitHub settings first");return false;}
+  const status=$("ghStatus");
+  if(status)status.textContent="Publishing\u2026";
+
+  // Collect all images from IndexedDB
+  const db=await openDB();
+  const imgKeys=await new Promise(res=>{let tx=db.transaction("images","readonly"),req=tx.objectStore("images").getAllKeys();req.onsuccess=()=>res(req.result)});
+  const imgMap={};
+  for(const k of imgKeys){imgMap[k]=await dbGet("images",k);}
+
+  // Snapshot outerHTML
+  let src=document.documentElement.outerHTML;
+
+  // Inject current bottles data
+  src=src.replace(/const BASE=\{[\s\S]*?\};(\s*let bottles)/,"const BASE="+JSON.stringify(BASE)+";\n$1");
+  src=src.replace(/let bottles=\{\}/,"let bottles="+JSON.stringify(bottles));
+
+  // Remove old hidden img tags, re-inject all current images
+  src=src.replace(/<img id="base-img-[^"]*" src="[^"]*" hidden>\n?/g,"");
+  const imgTags=Object.entries(imgMap).map(([k,v])=>`<img id="base-img-${k}" src="${v}" hidden>`).join("\n");
+  src=src.replace(/(<body[^>]*>)/,"$1\n"+imgTags);
+
+  // Stamp publish time
+  const ts=new Date().toISOString().slice(0,16).replace("T"," ")+" UTC";
+  src=src.replace(/<title>[^<]*<\/title>/,"<title>Whisky Vault GEN2 \u2014 published "+ts+"<\/title>");
+
+  // Push to GitHub
+  try{
+    const headRes=await fetch("https://api.github.com/repos/"+repo+"/contents/"+path+"?ref="+branch,
+      {headers:{"Authorization":"token "+pat,"Accept":"application/vnd.github.v3+json"}});
+    let sha="";
+    if(headRes.ok){const j=await headRes.json();sha=j.sha||"";}
+    const body={message:"Whisky Vault \u00b7 Export "+ts,content:btoa(unescape(encodeURIComponent(src))),branch};
+    if(sha)body.sha=sha;
+    const putRes=await fetch("https://api.github.com/repos/"+repo+"/contents/"+path,
+      {method:"PUT",headers:{"Authorization":"token "+pat,"Accept":"application/vnd.github.v3+json","Content-Type":"application/json"},
+       body:JSON.stringify(body)});
+    if(!putRes.ok){const e=await putRes.json();throw new Error(e.message);}
+    if(!silent)pop("Published to GitHub \u2713");
+    if(status)status.textContent="Last published: "+ts;
+    return true;
+  }catch(err){
+    if(!silent)pop("GitHub error: "+err.message);
+    if(status)status.textContent="Error: "+err.message;
+    return false;
+  }
+}
+
+$("exportDashBtn").onclick=()=>exportDashboard(false);
+
+// Auto-commit hook — wraps saveData
+const _origSave=saveData;
+saveData=async function(){
+  const ok=await _origSave();
+  if(ok&&ghGet(GH_AUTO)==="1")exportDashboard(true);
+  return ok;
+};
+
+// ── Autocomplete helpers ──────────────────────────────────────────────
+async function getList(key){return await dbGet("lists",key)||[]}
+async function addToList(key,val){if(!val)return;let list=await getList(key);if(!list.includes(val)){list.unshift(val);if(list.length>80)list=list.slice(0,80);await dbPut("lists",key,list)}}
+function acBind(inputId,dropId,listKey){
+  const inp=$(inputId),drop=$(dropId);
+  let items=[],hi=-1;
+  async function refresh(){items=await getList(listKey)}
+  refresh();
+  function renderDrop(q){
+    const filtered=q?items.filter(x=>x.toLowerCase().includes(q.toLowerCase())):items;
+    if(!filtered.length){drop.classList.remove("open");return}
+    drop.innerHTML=filtered.slice(0,12).map((x,i)=>`<div class="ac-item${i===hi?" hi":""}" data-v="${esc(x)}">${esc(x)}</div>`).join("");
+    drop.classList.add("open");
+  }
+  inp.addEventListener("input",()=>{hi=-1;renderDrop(inp.value.trim())});
+  inp.addEventListener("focus",()=>{hi=-1;renderDrop(inp.value.trim())});
+  inp.addEventListener("keydown",e=>{
+    const rows=drop.querySelectorAll(".ac-item");
+    if(e.key==="ArrowDown"){e.preventDefault();hi=Math.min(hi+1,rows.length-1);rows.forEach((r,i)=>r.classList.toggle("hi",i===hi));}
+    else if(e.key==="ArrowUp"){e.preventDefault();hi=Math.max(hi-1,0);rows.forEach((r,i)=>r.classList.toggle("hi",i===hi));}
+    else if(e.key==="Enter"&&hi>=0){e.preventDefault();inp.value=rows[hi].dataset.v;drop.classList.remove("open");hi=-1;}
+    else if(e.key==="Escape"){drop.classList.remove("open");}
+  });
+  drop.addEventListener("mousedown",e=>{
+    const item=e.target.closest(".ac-item");
+    if(item){e.preventDefault();inp.value=item.dataset.v;drop.classList.remove("open");hi=-1;}
+  });
+  document.addEventListener("click",e=>{if(!inp.contains(e.target)&&!drop.contains(e.target))drop.classList.remove("open")});
+  inp._acRefresh=refresh;
+}
+
+// ── Toggle button helpers ─────────────────────────────────────────────
+function togBind(yId,nId,hiddenId){
+  const Y=$(yId),N=$(nId),H=$(hiddenId);
+  function set(v){H.value=v;Y.className="tog"+(v==="Yes"?" on":"");N.className="tog"+(v==="No"?" no":"");}
+  set("Unknown");
+  Y.onclick=()=>set(H.value==="Yes"?"Unknown":"Yes");
+  N.onclick=()=>set(H.value==="No"?"Unknown":"No");
+  H._togSet=set;
+}
+
+// ── Wire up on DOM ready ──────────────────────────────────────────────
+acBind("fbrand","brandDrop","brands");
+acBind("fdistillery","distilleryDrop","distilleries");
+togBind("fchillY","fchillN","fchill");
+togBind("fnaturalY","fnaturalN","fnatural");
+
+// ── ABV formatting: strip/add % ───────────────────────────────────────
+function getAge(){const v=$("fage").value.trim();if(!v)return "";const n=parseInt(v);return isNaN(n)?"NAS":(n+" Years Old")}
+function setAge(v){$("fage").value=v?(parseInt(v)||""):"";}
+function getAbv(){const v=$("fabv").value.trim();return v?(parseFloat(v).toFixed(1).replace(/\.0$/,"")+"%"):""}
+function setAbv(v){$("fabv").value=v?parseFloat(v)||"":"";}
+
+loadGhSettings();
 loadData();
 </script>
 </body>
